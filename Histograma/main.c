@@ -4,7 +4,7 @@
 
 #include "menu.h"
 #include "Histograma.h"
-#include "operacionesArchivo.h"
+//#include "operacionesArchivo.h"
 
 int main(){
     printf("HISTOGRAMA");
