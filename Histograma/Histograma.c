@@ -5,6 +5,12 @@
 
 #include "Histograma.h"
 
+//SÍ PUDE DESCARGAR EL PROYECTO C:
+
+int main(){
+    printf("HISTOGRAMA");
+}
+
 void histo_secuencial(){
     //Inicializar con 0
     for(int i = 0; i < NG; i++)
