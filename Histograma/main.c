@@ -103,8 +103,24 @@ int main(){
     stbi_write_jpg("nuevaImagen.jpg", ancho, alto, 1, imaEc, 100);
     printf("Imagen guardada correctamente.\n");
 
-    //Liberar Memoria
+    //Liberar Memoria de la imagen.
     stbi_image_free(imaEc);
+
+    //Generacion de archivo csv.
+    FILE *csv_secuencial = fopen("histo_secuencial.csv","w+");
+
+    //Datos del Header.
+    fprintf(csv_secuencial, "%s,%s,%s \n", "Valor", "Histo", "HistoEc");
+
+    //Contenido del archivo.
+    for(int i=0; i<L; i++)
+        fprintf(csv_secuencial,"%d,%d,%d \n",i,histoImaO[i],nuevoHisto[i]);
+
+    //Cierre del archivo
+    fclose(csv_secuencial);
+
+    printf("El archivo se ha creado correctamente.");
+
     return 0;
 
     /*
