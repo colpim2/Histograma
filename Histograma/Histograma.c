@@ -5,21 +5,16 @@
 
 #include "Histograma.h"
 
-//SÍ PUDE DESCARGAR EL PROYECTO C:
+#define L 256
 
-int main(){
-    printf("HISTOGRAMA");
-}
-
-void histo_secuencial(){
+void histo_secuencial(int *histo, unsigned char *IMAGEN, int resolucion){
     //Inicializar con 0
-    for(int i = 0; i < NG; i++)
-        histo_sec[i] = 0;
+    for(int i = 0; i < L; i++)
+        histo[i] = 0;
 
     //Calculo del histograma
-    for(int i = 0; i < N; i++)
-        for(int j = 0; j < N; j++)
-            histo_sec[IMAGEN[i][j]]++;
+    for(int i = 0; i < resolucion; i++)
+        histo[IMAGEN[i]]++;
 }
 
 void histo_paralelo(){

@@ -12,7 +12,7 @@ int histo_para[NG];
 int histo_redu[NG];
 
 //Prototipos
-void histo_secuencial();
+void histo_secuencial(int *histo, unsigned char *IMAGEN, int resolucion);
 void histo_paralelo();
 void histo_reduction();
 
