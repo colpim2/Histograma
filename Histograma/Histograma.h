@@ -12,5 +12,7 @@ int Minimo_secuencial(int* cdf);
 //Prototipos Comprobación
 int VerificarPixeles(int *histoIma);
 void ImprimirMatriz(int *HistoEc);
+void Metricas(double timeEndSec,double timeEndPara,int numProces);
+void OtrosTiempos(double timeEndCarga,double timeEndGenerada,double timeEndArchivo);
 
 #endif // HISTOGRAMA_H_INCLUDED

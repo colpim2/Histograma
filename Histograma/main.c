@@ -22,8 +22,12 @@ int main(){
 
     //Carga de la imagen con la libreria stb
     int ancho, alto, nCanales, resolucion;
+    double timeStartCarga,timeEndCarga;
+    timeStartCarga = omp_get_wtime();
 
     unsigned char *imaOriginal = stbi_load(rutaImagen, &ancho, &alto, &nCanales, 0);
+    timeEndCarga = omp_get_wtime()-timeStartCarga;
+
     if(imaOriginal == NULL){
         printf("La imagen %s no pudo ser cargada.\n",nombreIma);
         return 0;
@@ -36,12 +40,15 @@ int main(){
     }
 
     //Histograma generado de manera Secuencial.
+    double timeStartSec,timeEndSec;
+    timeStartSec = omp_get_wtime();
+
     int histoImaO[L];
     histo_secuencial(histoImaO,imaOriginal,resolucion);
 
     //Verificación de pixeles
-    printf("\nHistograma de la Imagen Original:\n");
-    printf("\nContador: %d\n",VerificarPixeles(histoImaO));
+    //printf("\nHistograma de la Imagen Original:\n");
+    //printf("\nContador: %d\n",VerificarPixeles(histoImaO));
 
     //Generacion el cdf (Cumulative Distributive Function)
     int cdf[L];
@@ -52,7 +59,6 @@ int main(){
     printf("\nValor minimo del cdf: %d\n",cdf_min);
 
     //Generacion  del histograma ecualizado.
-    //Función?
     int histoEc[L];
     for(int i=0; i<L; i++){
         double numerador = cdf[i]-cdf_min;
@@ -62,8 +68,8 @@ int main(){
     }
 
     //Comprobación
-    printf("\nHISTOGRAMA ECUALIZADO:\n");
-    ImprimirMatriz(histoEc);
+    //printf("\nHISTOGRAMA ECUALIZADO:\n");
+    //ImprimirMatriz(histoEc);
 
     //Generacion del arreglo de Pixeles para la nueva imagen.
     unsigned char *imaEc = malloc(resolucion * sizeof(unsigned char));
@@ -75,9 +81,11 @@ int main(){
     int nuevoHisto[L];
     histo_secuencial(nuevoHisto,imaEc,resolucion);
 
+    timeEndSec = omp_get_wtime()-timeStartSec;
+
     //Verificar pixeles nuevo Histograma
-    printf("\n\nHistograma de la nueva imagen:\n");
-    printf("\nContador: %d\n",VerificarPixeles(nuevoHisto));
+    //printf("\n\nHistograma de la nueva imagen:\n");
+    //printf("\nContador: %d\n",VerificarPixeles(nuevoHisto));
 
     //Guardar imagen generada.
     stbi_write_jpg("nuevaImagen.jpg", ancho, alto, 1, imaEc, 100);
@@ -114,6 +122,9 @@ int main(){
 
     //Obtener numero de procesadores
     int numProces = omp_get_num_threads();
+
+    double timeStartPara,timeEndPara;
+    timeStartPara = omp_get_wtime();
 
     #pragma omp parallel num_threads(numProces)
     {
@@ -158,15 +169,21 @@ int main(){
             for(int i=0; i<resolucion; i++)
                 imaEcPara[i] = histoEcPara[imaOriginal[i]];
 
-        #pragma omp barrier //??
+        #pragma omp barrier
 
         #pragma omp for reduction(+ : nuevoHistoPara)
             for(int i=0; i<resolucion; i++)
                 nuevoHistoPara[imaEcPara[i]]++;
     }
+    timeEndPara = omp_get_wtime()-timeStartPara;
 
     //Guardar imagen generada.
+    double timeStartGenerada,timeEndGenerada;
+    timeStartGenerada = omp_get_wtime();
+
     stbi_write_jpg("nuevaImagenParalelo.jpg", ancho, alto, 1, imaEcPara, 100);
+
+    timeEndGenerada = omp_get_wtime()-timeStartGenerada;
     printf("\nImagen guardada correctamente.\n");
 
     //Liberar Memoria de la imagen.
@@ -174,9 +191,24 @@ int main(){
 
     //Generacion de archivo csv.
     char *ArchivoNombrePara = "histo_paralelo.csv";
-    GuardarCSV(histoImaOPara,nuevoHistoPara,ArchivoNombrePara);
-    printf("El archivo se ha creado correctamente.");
+    double timeStartArchivo,timeEndArchivo;
+    timeStartArchivo = omp_get_wtime();
 
+    GuardarCSV(histoImaOPara,nuevoHistoPara,ArchivoNombrePara);
+
+    timeEndArchivo = omp_get_wtime()-timeStartArchivo;
+    printf("El archivo se ha creado correctamente.\n");
+
+    //Calculo de métricas
+    Metricas(timeEndSec,timeEndPara,numProces);
+    OtrosTiempos(timeEndCarga,timeEndGenerada,timeEndArchivo);
     return 0;
 }
 
+/* NOTA
+    - Funcionar con 3 canales [Tomar el rojo]
+    - Pasar la ruta mediante linea de comando usando argc y argv
+    Si no existe el argumento, arrojar un error y terminar el programa
+    - Gráficas de histogramas [Original,Ecualizada]
+    - Sufijos de las imagenes y CVS generados con el nombre original y Para,Sec
+*/
