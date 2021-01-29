@@ -2,9 +2,9 @@
 #include<stdlib.h>
 #include <time.h>
 
-#include"operacionesArchivo.h"
+#include "operacionesArchivo.h"
 
-#define MAXTEXTO 50
+#define L 256
 
 int EstadoArchivo(char *archivoNombre[MAXTEXTO]){
 FILE *Archivo;
@@ -21,106 +21,15 @@ FILE *Archivo;
     }
 }
 
-/*
-void LeerArchivo(char *archivoNombre[MAXTEXTO],Empresa *empresa){
-  FILE *Archivo;
-    Archivo = fopen(archivoNombre,"r");
-    if(guardarMemoria(empresa) != 0){
+void GuardarCSV(int *histoImaO, int *nuevoHisto){
+    FILE *csv_secuencial = fopen("histo_secuencial.csv","w+");
 
-        fgets(empresa->nombre,50,Archivo);
-        empresa->nombre[strlen(empresa->nombre) - 1] = '\0';
-        fscanf (Archivo,"%lf",&*empresa->mensual->ProduccionM);
-        fscanf (Archivo,"%lf",&*empresa->mensual->VentaM);
-        fscanf (Archivo,"%lf",&*empresa->anual->ProduccionA);
-        fscanf (Archivo,"%lf",&*empresa->anual->VentaA);
-        fscanf (Archivo,"%f",&empresa->PorcentajeReciclado);
-    }
-    fclose(Archivo);
-    system("cls");
+    //Datos del Header.
+    fprintf(csv_secuencial, "%s,%s,%s \n", "Valor", "Histo", "HistoEc");
+
+    //Contenido del archivo.
+    for(int i=0; i<L; i++)
+        fprintf(csv_secuencial,"%d,%d,%d \n",i,histoImaO[i],nuevoHisto[i]);
+
+    fclose(csv_secuencial);
 }
-
-void GuardarArchivo(Empresa empresa){
-  FILE *Nuevo;
-  char archivoNuevo[MAXTEXTO],Respuesta,Test[MAXTEXTO];
-  int i;
-    printf("%cCon qu%c nombre quiere guardar sus resultados%c (Incluya la extensi%cn .txt):",168,130,63,162);
-    scanf(" %[^\n]",&archivoNuevo);
-    if( (Nuevo=fopen(archivoNuevo,"r")) == NULL ){
-        Nuevo=fopen(archivoNuevo,"w+t");
-        char a[100];
-        time_t rawtime;
-	   	tm *info;
-	   	time( &rawtime );
-	   	info = localtime( &rawtime );
-	   	strcpy(a,asctime(info));
-        fprintf(Nuevo,"%s\n%lf\n%lf\n%lf\n%lf\n%f",empresa.nombre,*empresa.mensual->ProduccionM,*empresa.mensual->VentaM,*empresa.anual->ProduccionA,*empresa.anual->VentaA,empresa.PorcentajeReciclado);
-	   	fprintf(Nuevo, "\n\n\nUltima modificacion: %s", a);
-        fclose(Nuevo);
-        printf("%s Creado \n",archivoNuevo);
-    }
-    else
-    {
-        for(i=0;i<MAXTEXTO;i++)
-            Test[i] = archivoNuevo[i];
-        printf("\n%cDesea sobrescribirlo%c (s/n)",168,63);
-        scanf("%s",&Respuesta);
-        if(Respuesta == 's')
-        {
-            Nuevo = fopen(Test,"w+t");
-            time_t rawtime;
-		   	tm *info;
-		   	time( &rawtime );
-		   	info = localtime( &rawtime );
-       		fprintf(Nuevo,"%s\n%lf\n%lf\n%lf\n%lf\n%f",empresa.nombre,*empresa.mensual->ProduccionM,*empresa.mensual->VentaM,*empresa.anual->ProduccionA,*empresa.anual->VentaA,empresa.PorcentajeReciclado);
-	   		fprintf(Nuevo, "\n\n\nUltima modificacion: %s", asctime(info));
-			fclose(Nuevo);
-            printf("%s Actualizado \n",Test);
-            system("pause");
-        }
-    }
-}
-
-void GuardarArchivoUsuario(Empresa empresa){
-  FILE *Nuevo;
-  char archivoNuevo[MAXTEXTO],Respuesta,Test[MAXTEXTO];
-  int i;
-    strcpy(archivoNuevo,empresa.nombre);
-    strcat(archivoNuevo,"usuario.txt");
-    if( (Nuevo=fopen(archivoNuevo,"r")) == NULL ){
-        Nuevo=fopen(archivoNuevo,"w+t");
-        char a[100];
-        time_t rawtime;
-	   	tm *info;
-	   	time( &rawtime );
-	   	info = localtime( &rawtime );
-	   	strcpy(a,asctime(info));
-        fprintf(Nuevo,"Nombre empresa:%s\n\nDATOS MENSUALES\nCantidad de plastico producido al mes [TONELADAS]: %lf\n\nCantidad de plastico vendido al mes [TONELADAS]: %lf\n\n\nDATOS ANUALES\nCantidad de plastico producido al ano [TONELADAS]: %lf\n\nCantidad de plastico vendido al ano [TONELADAS]: %lf\n\nPorcentaje de plastico reciclado al ano: %f",empresa.nombre,*empresa.mensual->ProduccionM,*empresa.mensual->VentaM,*empresa.anual->ProduccionA,*empresa.anual->VentaA,empresa.PorcentajeReciclado);
-	   	fprintf(Nuevo, "\n\n\nUltima modificacion: %s", a);
-        fclose(Nuevo);
-        printf("%s Creado \n",archivoNuevo);
-        system("pause");
-    }
-    else
-    {
-        for(i=0;i<MAXTEXTO;i++)
-            Test[i] = archivoNuevo[i];
-        printf("\n%cDesea sobrescribirlo%c (s/n)",168,63);
-        scanf("%s",&Respuesta);
-        if(Respuesta == 's')
-        {
-            Nuevo = fopen(Test,"w+t");
-            time_t rawtime;
-		   	tm *info;
-		   	time( &rawtime );
-		   	info = localtime( &rawtime );
-       		fprintf(Nuevo,"Nombre empresa:%s\n\nDATOS MENSUALES\nCantidad de plastico producido al mes [TONELADAS]: %lf\n\nCantidad de plastico vendido al mes [TONELADAS]: %lf\n\n\nDATOS ANUALES\nCantidad de plastico producido al ano [TONELADAS]: %lf\n\nCantidad de plastico vendido al ano [TONELADAS]: %lf\n\nPorcentaje de plastico reciclado al ano: %f",empresa.nombre,*empresa.mensual->ProduccionM,*empresa.mensual->VentaM,*empresa.anual->ProduccionA,*empresa.anual->VentaA,empresa.PorcentajeReciclado);
-	   		fprintf(Nuevo, "\n\n\nUltima modificacion: %s", asctime(info));
-			fclose(Nuevo);
-            printf("%s Actualizado \n",Test);
-            system("pause");
-        }
-    }
-    system("cls");
-}
-
-*/

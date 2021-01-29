@@ -16,8 +16,7 @@ typedef struct{
 }tm;
 
 int EstadoArchivo(char *archivoNombre[MAXTEXTO]);
-//void LeerArchivo(char *archivoNombre[MAXTEXTO],Empresa *empresa);
+void GuardarCSV(int *histoImaO, int *nuevoHisto);
 //void GuardarArchivo(Empresa empresa);
-//void GuardarArchivoUsuario(Empresa empresa);
 
 #endif // OPERACIONESARCHIVO_H_INCLUDED

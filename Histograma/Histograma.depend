@@ -58,3 +58,20 @@
 	<omp.h>
 	"Histograma.h"
 
+1611879329 source:c:\users\mipc\desktop\histograma\histograma\histograma.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<omp.h>
+	"Histograma.h"
+
+1611879044 c:\users\mipc\desktop\histograma\histograma\histograma.h
+
+1611879086 source:c:\users\mipc\desktop\histograma\histograma\operacionesarchivo.c
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	"operacionesArchivo.h"
+
+1611878281 c:\users\mipc\desktop\histograma\histograma\operacionesarchivo.h
+
