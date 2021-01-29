@@ -24,8 +24,6 @@ void DistriAcumulada_secuencial(int* histoImaO,int *cdf){
     for(int i=1; i<L; i++)
         cdf[i] = histoImaO[i]+cdf[i-1];
 
-    printf("\nCDF:\n");
-    ImprimirMatriz(cdf);
 }
 
 int Minimo_secuencial(int* cdf){
@@ -38,6 +36,7 @@ int Minimo_secuencial(int* cdf){
         if(cdf[i] < cdf_min)
             cdf_min = cdf[i];
     }
+    return cdf_min;
 }
 
 //Métodos Paralelos

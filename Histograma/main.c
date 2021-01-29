@@ -34,7 +34,7 @@ int main(){
     }
     else{
         printf("La imagen %s se ha cargado correctamente.\n", nombreIma);
-        printf("Datos de la imgen:\n");
+        printf("Datos de la imagen:\n");
         resolucion = ancho*alto;
         printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",ancho,alto,nCanales,resolucion);
     }
@@ -53,6 +53,10 @@ int main(){
     //Generacion el cdf (Cumulative Distributive Function)
     int cdf[L];
     DistriAcumulada_secuencial(histoImaO,cdf);
+
+    //Comprobación
+    //printf("\nCDF:\n");
+    //ImprimirMatriz(cdf);
 
     //Busqueda del valor minimo
     int cdf_min = Minimo_secuencial(cdf);
@@ -107,7 +111,7 @@ int main(){
 
     //Carga de imagen ocupada de secuencial
     printf("La imagen %s se ha cargado correctamente.\n", nombreIma);
-    printf("Datos de la imgen:\n");
+    printf("Datos de la imagen:\n");
     printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",ancho,alto,nCanales,resolucion);
 
     //Variables compartidas -> Fuera del pragma
