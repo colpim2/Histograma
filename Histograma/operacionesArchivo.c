@@ -5,6 +5,7 @@
 #include "operacionesArchivo.h"
 
 #define L 256
+#define MAXTEXTO 500
 
 int EstadoArchivo(char *archivoNombre[MAXTEXTO]){
 FILE *Archivo;
@@ -21,8 +22,8 @@ FILE *Archivo;
     }
 }
 
-void GuardarCSV(int *histoImaO, int *nuevoHisto){
-    FILE *csv_secuencial = fopen("histo_secuencial.csv","w+");
+void GuardarCSV(int *histoImaO, int *nuevoHisto,char *archivoNombre[MAXTEXTO]){
+    FILE *csv_secuencial = fopen(archivoNombre,"w+");
 
     //Datos del Header.
     fprintf(csv_secuencial, "%s,%s,%s \n", "Valor", "Histo", "HistoEc");
