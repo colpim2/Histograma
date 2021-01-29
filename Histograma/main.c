@@ -13,18 +13,24 @@
 
 #define L 256
 
-int main(){
+int main(int argc, char *argv[]){
     /* PARTE SECUENCIAL */
 
+    /*if(argc < 2){
+        printf("Lo sentimos, es necesario ingresar el segundo parametro con la ruta de la imagen para poder trabajar. :c");
+        return 0;
+    }*/
+
+    printf("=== Version Secuencial ===\n");
     //Cambiar a ingresado por el usuario usar arg
-    char *rutaImagen = "../ImagenesTest/imaGray_1.jpg";
-    char *nombreIma = "imaGray_1.jpg";
+    char *rutaImagen = "../ImagenesTest/imaRGB_1.jpg";
+    char *nombreIma = "imaRGB_1.jpg";
 
     //Carga de la imagen con la libreria stb
     int ancho, alto, nCanales, resolucion;
     double timeStartCarga,timeEndCarga;
-    timeStartCarga = omp_get_wtime();
 
+    timeStartCarga = omp_get_wtime();
     unsigned char *imaOriginal = stbi_load(rutaImagen, &ancho, &alto, &nCanales, 0);
     timeEndCarga = omp_get_wtime()-timeStartCarga;
 
@@ -39,8 +45,16 @@ int main(){
         printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",ancho,alto,nCanales,resolucion);
     }
 
+    if(nCanales == 3){
+        unsigned char *imaTemp = malloc(resolucion);
+        for(int i=0; i<resolucion; i++)
+            imaTemp[i] = imaOriginal[i*nCanales];
+        imaOriginal = imaTemp;
+    }
+
     //Histograma generado de manera Secuencial.
     double timeStartSec,timeEndSec;
+
     timeStartSec = omp_get_wtime();
 
     int histoImaO[L];
@@ -155,7 +169,7 @@ int main(){
             }
             printf("\nValor minimo del cdf: %d\n",cdfPara_min); //Comprobación
 
-        #pragma omp barrier //???
+        //#pragma omp barrier //???
 
         //Formula de ecualización
         #pragma omp for

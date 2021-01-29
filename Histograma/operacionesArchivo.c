@@ -5,9 +5,9 @@
 #include "operacionesArchivo.h"
 
 #define L 256
-#define MAXTEXTO 500
+//#define MAXTEXTO 500
 
-int EstadoArchivo(char *archivoNombre[MAXTEXTO]){
+int EstadoArchivo(char *archivoNombre){
 FILE *Archivo;
     if( (Archivo = fopen(archivoNombre,"r")) == NULL)
 	{
@@ -22,7 +22,7 @@ FILE *Archivo;
     }
 }
 
-void GuardarCSV(int *histoImaO, int *nuevoHisto,char *archivoNombre[MAXTEXTO]){
+void GuardarCSV(int *histoImaO, int *nuevoHisto,char *archivoNombre){
     FILE *csv_secuencial = fopen(archivoNombre,"w+");
 
     //Datos del Header.
