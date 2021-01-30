@@ -1,7 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <omp.h>
 #include <math.h>
+#include <unistd.h>
+#include <omp.h>
 
 #include "Histograma.h"
 #include "operacionesArchivo.h"
@@ -26,18 +27,19 @@ int main(int argc, char *argv[]){
         case 1: ;
             /* PARTE SECUENCIAL */
             //Obtener ruta de la imagen
-            char nombreIma[MAXTEXTO];
+            char nombreIma[MAXTEXTO],nombreImaExtend[MAXTEXTO];
             char rutaImagen[MAXTEXTO] = "../ImagenesTest/";
 
-            printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (junto con su extensi%cn .jpg): ",162);
+            printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (sin la extensi%cn .jpg): ",162);
             scanf(" %[^\n]",&nombreIma);
-            strcat(rutaImagen,nombreIma);
-            /*
-            if ( rutaImagen == NULL){
-                printf("Lo sentimos, no existe la imagen %s :c",nombreIma);
+            strcpy(nombreImaExtend,nombreIma);
+            strcat(nombreImaExtend,".jpg");
+            strcat(rutaImagen,nombreImaExtend);
+            if (access(rutaImagen,F_OK)!= 0){
+                printf("Lo sentimos, no existe la imagen %s :c",nombreImaExtend);
                 return 0;
             }
-            */
+
             printf("=== Version Secuencial ===\n");
 
             //Carga de la imagen con la libreria stb
@@ -49,11 +51,11 @@ int main(int argc, char *argv[]){
             timeEndCarga = omp_get_wtime()-timeStartCarga;
 
             if(imaOriginal == NULL){
-                printf("La imagen %s no pudo ser cargada.\n",nombreIma);
+                printf("La imagen %s no pudo ser cargada.\n",nombreImaExtend);
                 return 0;
             }
             else{
-                printf("La imagen %s se ha cargado correctamente.\n", nombreIma);
+                printf("La imagen %s se ha cargado correctamente.\n", nombreImaExtend);
                 printf("Datos de la imagen:\n");
                 resolucion = ancho*alto;
                 printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",ancho,alto,nCanales,resolucion);
@@ -120,15 +122,20 @@ int main(int argc, char *argv[]){
             //printf("\nContador: %d\n",VerificarPixeles(nuevoHisto));
 
             //Guardar imagen generada.
-            stbi_write_jpg("nuevaImagen.jpg", ancho, alto, 1, imaEc, 100);
+            char nombreImaSec[MAXTEXTO];
+            strcpy(nombreImaSec,nombreIma);
+            strcat(nombreImaSec,"_Sec.jpg");
+            stbi_write_jpg(nombreImaSec, ancho, alto, 1, imaEc, 100);
             printf("\nImagen guardada correctamente.\n");
 
             //Liberar Memoria de la imagen.
             stbi_image_free(imaEc);
 
             //Generacion de archivo csv.
-            char *ArchivoNombre = "histo_secuencial.csv";
-            GuardarCSV(histoImaO,nuevoHisto,ArchivoNombre);
+            char ArchivoNombreSec[MAXTEXTO];
+            strcpy(ArchivoNombreSec,nombreIma);
+            strcat(ArchivoNombreSec,"_Histo_Sec.csv");
+            GuardarCSV(histoImaO,nuevoHisto,ArchivoNombreSec);
             printf("El archivo se ha creado correctamente.");
 
 
@@ -138,7 +145,7 @@ int main(int argc, char *argv[]){
             printf("\n\n=== Version Paralelo ===\n");
 
             //Carga de imagen ocupada de secuencial
-            printf("La imagen %s se ha cargado correctamente.\n", nombreIma);
+            printf("La imagen %s se ha cargado correctamente.\n", nombreImaExtend);
             printf("Datos de la imagen:\n");
             printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",ancho,alto,nCanales,resolucion);
 
@@ -162,8 +169,10 @@ int main(int argc, char *argv[]){
             {
                 //Inicializar con 0
                 #pragma omp for
-                    for(int i=0; i<L; i++)
+                    for(int i=0; i<L; i++){
                         histoImaOPara[i] = 0;
+                        nuevoHistoPara[i] = 0;
+                    }
 
                 #pragma omp barrier
 
@@ -199,14 +208,19 @@ int main(int argc, char *argv[]){
                         imaEcPara[i] = histoEcPara[imaOriginal[i]];
                         nuevoHistoPara[imaEcPara[i]]++;
                     }
+
             }
             timeEndPara = omp_get_wtime()-timeStartPara;
 
             //Guardar imagen generada.
+            char nombreImaPara[MAXTEXTO];
+            strcpy(nombreImaPara,nombreIma);
+            strcat(nombreImaPara,"_Para.jpg");
+
             double timeStartGenerada,timeEndGenerada;
             timeStartGenerada = omp_get_wtime();
 
-            stbi_write_jpg("nuevaImagenParalelo.jpg", ancho, alto, 1, imaEcPara, 100);
+            stbi_write_jpg(nombreImaPara, ancho, alto, 1, imaEcPara, 100);
 
             timeEndGenerada = omp_get_wtime()-timeStartGenerada;
             printf("\nImagen guardada correctamente.\n");
@@ -215,7 +229,10 @@ int main(int argc, char *argv[]){
             stbi_image_free(imaEcPara);
 
             //Generacion de archivo csv.
-            char *ArchivoNombrePara = "histo_paralelo.csv";
+            char ArchivoNombrePara[MAXTEXTO];
+            strcpy(ArchivoNombrePara,nombreIma);
+            strcat(ArchivoNombrePara,"_Histo_Para.csv");
+
             double timeStartArchivo,timeEndArchivo;
             timeStartArchivo = omp_get_wtime();
 
@@ -232,20 +249,30 @@ int main(int argc, char *argv[]){
 
         case 2: ;
             //Imagen de color a escala de grises.
-            char *path = "../ImagenesTest/paisaje.jpg";
-            char *imaName = "paisaje.jpg";
+            char nombreImaColor[MAXTEXTO],nombreImaColorExtend[MAXTEXTO];
+            char rutaImagenColor[MAXTEXTO] = "../ImagenesTest/";
+
+            printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (sin la extensi%cn .jpg): ",162);
+            scanf(" %[^\n]",&nombreImaColor);
+            strcpy(nombreImaColorExtend,nombreImaColor);
+            strcat(nombreImaColorExtend,".jpg");
+            strcat(rutaImagenColor,nombreImaColorExtend);
+            if (access(rutaImagenColor,F_OK)!= 0){
+                printf("Lo sentimos, no existe la imagen %s :c",nombreImaColor);
+                return 0;
+            }
 
             //Carga de la imagen con la libreria stb
             int width, height, channels, resolution;
 
-            unsigned char *image = stbi_load(path, &width, &height, &channels, 0);
+            unsigned char *image = stbi_load(rutaImagenColor, &width, &height, &channels, 0);
 
             if(image == NULL){
-                printf("La imagen %s no pudo ser cargada.\n",imaName);
+                printf("La imagen %s no pudo ser cargada.\n",nombreImaColorExtend);
                 return 0;
             }
             else{
-                printf("La imagen %s se ha cargado correctamente.\n", imaName);
+                printf("La imagen %s se ha cargado correctamente.\n", nombreImaColorExtend);
                 printf("Datos de la imagen:\n");
                 resolution = width*height;
                 printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",width,height,channels,resolution);
@@ -270,7 +297,11 @@ int main(int argc, char *argv[]){
             }
 
             //Guardar imagen generada.
-            stbi_write_jpg("imagenGris.jpg", width, height, 1, newImage, 100);
+            char nombreImaGris[MAXTEXTO];
+            strcpy(nombreImaGris,nombreImaColor);
+            strcat(nombreImaGris,"_Gris.jpg");
+
+            stbi_write_jpg(nombreImaGris, width, height, 1, newImage, 100);
             printf("\nImagen guardada correctamente.\n");
 
             //Liberar Memoria de la imagen.
@@ -284,9 +315,6 @@ int main(int argc, char *argv[]){
 }
 
 /* NOTA
-    - Funcionar con 3 canales [Tomar el rojo]
-    - Pasar la ruta mediante linea de comando usando argc y argv
-    Si no existe el argumento, arrojar un error y terminar el programa
     - Gráficas de histogramas [Original,Ecualizada]
     - Sufijos de las imagenes y CVS generados con el nombre original y Para,Sec
 */

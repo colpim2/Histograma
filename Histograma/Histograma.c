@@ -39,9 +39,6 @@ int Minimo_secuencial(int* cdf){
     return cdf_min;
 }
 
-//Métodos Paralelos
-
-
 //Métodos Comprobación
 int VerificarPixeles(int *histoIma){
     int contador = 0;
