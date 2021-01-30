@@ -30,6 +30,7 @@ int main(int argc, char *argv[]){
             char nombreIma[MAXTEXTO],nombreImaExtend[MAXTEXTO];
             char rutaImagen[MAXTEXTO] = "../ImagenesTest/";
 
+            printf("=== Ecualizacion del Histograma ===\n");
             printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (sin la extensi%cn .jpg): ",162);
             scanf(" %[^\n]",&nombreIma);
             strcpy(nombreImaExtend,nombreIma);
@@ -40,7 +41,7 @@ int main(int argc, char *argv[]){
                 return 0;
             }
 
-            printf("=== Version Secuencial ===\n");
+            printf("\n=== Version Secuencial ===\n");
 
             //Carga de la imagen con la libreria stb
             int ancho, alto, nCanales, resolucion;
@@ -252,6 +253,7 @@ int main(int argc, char *argv[]){
             char nombreImaColor[MAXTEXTO],nombreImaColorExtend[MAXTEXTO];
             char rutaImagenColor[MAXTEXTO] = "../ImagenesTest/";
 
+            printf("=== Imagen Color a Gris ===\n");
             printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (sin la extensi%cn .jpg): ",162);
             scanf(" %[^\n]",&nombreImaColor);
             strcpy(nombreImaColorExtend,nombreImaColor);
@@ -316,5 +318,4 @@ int main(int argc, char *argv[]){
 
 /* NOTA
     - Gráficas de histogramas [Original,Ecualizada]
-    - Sufijos de las imagenes y CVS generados con el nombre original y Para,Sec
 */

@@ -55,7 +55,7 @@ void ImprimirMatriz(int *histoEc){
 }
 
 void Metricas(double timeEndSec,double timeEndPara,int numProces){
-    printf("\n** Metricas **");
+    printf("\n=== Metricas ===");
     printf("\n  *Tiempos: \n     Secuencial: %f \n     Paralelo: %f",timeEndSec, timeEndPara);
     printf("\n  *SpeedUp: %f",timeEndSec/timeEndPara);
     printf("\n  *Eficiencia: %f",(timeEndSec/timeEndPara)/numProces);
@@ -63,7 +63,7 @@ void Metricas(double timeEndSec,double timeEndPara,int numProces){
 }
 
 void OtrosTiempos(double timeEndCarga,double timeEndGenerada,double timeEndArchivo){
-    printf("\n** Otros tiempos **");
+    printf("\n=== Otros tiempos ===");
     printf("\n  *Carga imagen: %f",timeEndCarga);
     printf("\n  *Generar imagen: %f",timeEndGenerada);
     printf("\n  *Generar archivo: %f\n",timeEndArchivo);
