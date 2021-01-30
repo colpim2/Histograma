@@ -33,10 +33,8 @@ int main(int argc, char *argv[]){
             printf("=== Ecualizacion del Histograma ===\n");
             printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (sin la extensi%cn .jpg): ",162);
             scanf(" %[^\n]",&nombreIma);
-            strcpy(nombreImaExtend,nombreIma);
-            strcat(nombreImaExtend,".jpg");
-            strcat(rutaImagen,nombreImaExtend);
-            if (access(rutaImagen,F_OK)!= 0){
+            printf("Nombre guardado correctamente\n");
+            if(manejoCadenas(nombreIma,nombreImaExtend,rutaImagen) == 0){
                 printf("Lo sentimos, no existe la imagen %s :c",nombreImaExtend);
                 return 0;
             }
@@ -59,7 +57,7 @@ int main(int argc, char *argv[]){
                 printf("La imagen %s se ha cargado correctamente.\n", nombreImaExtend);
                 printf("Datos de la imagen:\n");
                 resolucion = ancho*alto;
-                printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",ancho,alto,nCanales,resolucion);
+                printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",ancho,alto,nCanales,resolucion/1000000);
             }
 
             if(nCanales == 3){
@@ -123,6 +121,7 @@ int main(int argc, char *argv[]){
             //printf("\nContador: %d\n",VerificarPixeles(nuevoHisto));
 
             //Guardar imagen generada.
+            printf("Guardando imagen Secuencial...\n");
             char nombreImaSec[MAXTEXTO];
             strcpy(nombreImaSec,nombreIma);
             strcat(nombreImaSec,"_Sec.jpg");
@@ -214,6 +213,7 @@ int main(int argc, char *argv[]){
             timeEndPara = omp_get_wtime()-timeStartPara;
 
             //Guardar imagen generada.
+            printf("Guardando imagen Paralelo...\n");
             char nombreImaPara[MAXTEXTO];
             strcpy(nombreImaPara,nombreIma);
             strcat(nombreImaPara,"_Para.jpg");
@@ -256,11 +256,8 @@ int main(int argc, char *argv[]){
             printf("=== Imagen Color a Gris ===\n");
             printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (sin la extensi%cn .jpg): ",162);
             scanf(" %[^\n]",&nombreImaColor);
-            strcpy(nombreImaColorExtend,nombreImaColor);
-            strcat(nombreImaColorExtend,".jpg");
-            strcat(rutaImagenColor,nombreImaColorExtend);
-            if (access(rutaImagenColor,F_OK)!= 0){
-                printf("Lo sentimos, no existe la imagen %s :c",nombreImaColor);
+            if(manejoCadenas(nombreImaColor,nombreImaColorExtend,rutaImagenColor)== 0){
+                printf("Lo sentimos, no existe la imagen %s :c",nombreImaExtend);
                 return 0;
             }
 
@@ -277,7 +274,7 @@ int main(int argc, char *argv[]){
                 printf("La imagen %s se ha cargado correctamente.\n", nombreImaColorExtend);
                 printf("Datos de la imagen:\n");
                 resolution = width*height;
-                printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",width,height,channels,resolution);
+                printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",width,height,channels,resolution/1000000);
             }
 
             //Unicamente trabaja con imagenes a color de 3 canales.
@@ -299,6 +296,7 @@ int main(int argc, char *argv[]){
             }
 
             //Guardar imagen generada.
+            printf("Guardando imagen...\n");
             char nombreImaGris[MAXTEXTO];
             strcpy(nombreImaGris,nombreImaColor);
             strcat(nombreImaGris,"_Gris.jpg");

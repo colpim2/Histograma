@@ -2,10 +2,23 @@
 #include <stdlib.h>
 #include <time.h>
 #include <omp.h>
+#include <unistd.h>
+#include <string.h>
 
 #include "Histograma.h"
 
 #define L 256
+#define MAXTEXTO 50
+
+//Lectura del nombre del archivo
+int manejoCadenas(char *nombreIma, char *nombreImaExtend, char *rutaImagen){
+    strcpy(nombreImaExtend,nombreIma);
+    strcat(nombreImaExtend,".jpg");
+    strcat(rutaImagen,nombreImaExtend);
+    if (access(rutaImagen,F_OK)!= 0)
+        return 0;
+    return 1;
+}
 
 //Métodos Secuenciales
 void histo_secuencial(int *histo, unsigned char *IMAGEN, int resolucion){
