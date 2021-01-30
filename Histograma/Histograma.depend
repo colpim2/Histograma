@@ -59,7 +59,7 @@
 	<omp.h>
 	"Histograma.h"
 
-1611893679 source:c:\users\mipc\desktop\histograma\histograma\histograma.c
+1611893918 source:c:\users\mipc\desktop\histograma\histograma\histograma.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
@@ -68,13 +68,13 @@
 
 1611893106 c:\users\mipc\desktop\histograma\histograma\histograma.h
 
-1611886032 source:c:\users\mipc\desktop\histograma\histograma\operacionesarchivo.c
+1611974248 source:c:\users\mipc\desktop\histograma\histograma\operacionesarchivo.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	"operacionesArchivo.h"
 
-1611886288 c:\users\mipc\desktop\histograma\histograma\operacionesarchivo.h
+1611974248 c:\users\mipc\desktop\histograma\histograma\operacionesarchivo.h
 
 1611893864 source:c:\users\mipc\desktop\histograma\histograma\main.c
 	<stdio.h>
@@ -111,4 +111,10 @@
 	<string.h>
 	<math.h>
 	<assert.h>
+
+1611974248 source:c:\users\mipc\desktop\histograma\histograma\menu.c
+	<stdio.h>
+	"menu.h"
+
+1611974248 c:\users\mipc\desktop\histograma\histograma\menu.h
 

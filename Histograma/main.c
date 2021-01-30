@@ -13,27 +13,32 @@
 #include "stb-master/stb_image_write.h"
 
 #define L 256
+#define MAXTEXTO 50
 
 int main(int argc, char *argv[]){
     int opcion;
     do
     {
-      opcion = desplegarMenu("MENU:\nSeleccione la opcion que desea ejecutar\n1) Ecualizacion del Histograma (Serial / Paralelo)\n2)Convertir imagen de color a escala de grises\n3)Salir del programa\nOpcion: ",3);
+      opcion = desplegarMenu("MENU:\nSeleccione la opcion que desea ejecutar\n1) Ecualizacion del Histograma (Serial / Paralelo)\n2) Convertir imagen de color a escala de grises\n3) Salir del programa\nOpcion: ",3);
       system("cls");
       switch (opcion)
       {
-        case 1:
+        case 1: ;
             /* PARTE SECUENCIAL */
+            //Obtener ruta de la imagen
+            char nombreIma[MAXTEXTO];
+            char rutaImagen[MAXTEXTO] = "../ImagenesTest/";
 
-            /*if(argc < 2){
-                printf("Lo sentimos, es necesario ingresar el segundo parametro con la ruta de la imagen para poder trabajar. :c");
+            printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (junto con su extensi%cn .jpg): ",162);
+            scanf(" %[^\n]",&nombreIma);
+            strcat(rutaImagen,nombreIma);
+            /*
+            if ( rutaImagen == NULL){
+                printf("Lo sentimos, no existe la imagen %s :c",nombreIma);
                 return 0;
-            }*/
-
+            }
+            */
             printf("=== Version Secuencial ===\n");
-            //Cambiar a ingresado por el usuario usar arg
-            char *rutaImagen = "../ImagenesTest/imaRGB_2.jpg";
-            char *nombreIma = "imaRGB_2.jpg";
 
             //Carga de la imagen con la libreria stb
             int ancho, alto, nCanales, resolucion;
@@ -170,21 +175,18 @@ int main(int argc, char *argv[]){
                 //Cumulative Distributive Function y CDF min
                 #pragma omp single
                     cdfPara[0] = histoImaOPara[0];
-                    for(int i=1; i<L; i++)
-                    {
+                    for(int i=1; i<L; i++){
                         cdfPara[i] = histoImaOPara[i]+cdfPara[i-1];
                         if((cdfPara[i] < cdfPara_min)&&(cdfPara[i] != 0))
                             cdfPara_min = cdfPara[i];
                     }
+                    double denominador = resolucion-cdfPara_min;
                     printf("\nValor minimo del cdf: %d\n",cdfPara_min); //Comprobación
-
-                //#pragma omp barrier //???
 
                 //Formula de ecualización
                 #pragma omp for
                     for(int i=0; i<L; i++){
                         double numerador = cdfPara[i]-cdfPara_min;
-                        double denominador = resolucion-cdfPara_min;
                         int hv = numerador / denominador * (L-2) + 1;
                         histoEcPara[i] = round(hv);
                     }
@@ -192,15 +194,11 @@ int main(int argc, char *argv[]){
                 #pragma omp barrier
 
                 //Generar la nueva imagen
-                #pragma omp for
-                    for(int i=0; i<resolucion; i++)
-                        imaEcPara[i] = histoEcPara[imaOriginal[i]];
-
-                #pragma omp barrier
-
                 #pragma omp for reduction(+ : nuevoHistoPara)
-                    for(int i=0; i<resolucion; i++)
+                    for(int i=0; i<resolucion; i++){
+                        imaEcPara[i] = histoEcPara[imaOriginal[i]];
                         nuevoHistoPara[imaEcPara[i]]++;
+                    }
             }
             timeEndPara = omp_get_wtime()-timeStartPara;
 
@@ -231,6 +229,7 @@ int main(int argc, char *argv[]){
             OtrosTiempos(timeEndCarga,timeEndGenerada,timeEndArchivo);
             printf("\n\n");
             break;
+
         case 2: ;
             //Imagen de color a escala de grises.
             char *path = "../ImagenesTest/paisaje.jpg";
@@ -258,7 +257,7 @@ int main(int argc, char *argv[]){
                 return 0;
             }
 
-            //Reserva de mamoria para la nueva imagen.
+            //Reserva de memoria para la nueva imagen.
             unsigned char *newImage = malloc(resolution);
 
             //Valor de cada pixel en escala de grises.
