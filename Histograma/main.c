@@ -33,13 +33,10 @@ int main(int argc, char *argv[]){
             printf("=== Ecualizacion del Histograma ===\n");
             printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (sin la extensi%cn .jpg): ",162);
             scanf(" %[^\n]",&nombreIma);
-            printf("Nombre guardado correctamente\n");
             if(manejoCadenas(nombreIma,nombreImaExtend,rutaImagen) == 0){
                 printf("Lo sentimos, no existe la imagen %s :c",nombreImaExtend);
                 return 0;
             }
-
-            printf("\n=== Version Secuencial ===\n");
 
             //Carga de la imagen con la libreria stb
             int ancho, alto, nCanales, resolucion;
@@ -67,6 +64,7 @@ int main(int argc, char *argv[]){
                 imaOriginal = imaTemp;
             }
 
+            printf("\n=== Version Secuencial ===\n");
             //Histograma generado de manera Secuencial.
             double timeStartSec,timeEndSec;
 
