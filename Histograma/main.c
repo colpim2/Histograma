@@ -38,6 +38,7 @@ int main(int argc, char *argv[]){
                 return 0;
             }
 
+            printf("\n=== Version Secuencial ===\n");
             //Carga de la imagen con la libreria stb
             int ancho, alto, nCanales, resolucion;
             double timeStartCarga,timeEndCarga;
@@ -54,7 +55,7 @@ int main(int argc, char *argv[]){
                 printf("La imagen %s se ha cargado correctamente.\n", nombreImaExtend);
                 printf("Datos de la imagen:\n");
                 resolucion = ancho*alto;
-                printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",ancho,alto,nCanales,resolucion/1000000);
+                printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d Pixeles\n",ancho,alto,nCanales,resolucion);
             }
 
             if(nCanales == 3){
@@ -64,7 +65,6 @@ int main(int argc, char *argv[]){
                 imaOriginal = imaTemp;
             }
 
-            printf("\n=== Version Secuencial ===\n");
             //Histograma generado de manera Secuencial.
             double timeStartSec,timeEndSec;
 
@@ -119,7 +119,7 @@ int main(int argc, char *argv[]){
             //printf("\nContador: %d\n",VerificarPixeles(nuevoHisto));
 
             //Guardar imagen generada.
-            printf("Guardando imagen Secuencial...\n");
+            printf("Guardando nueva imagen - Secuencial...\n");
             char nombreImaSec[MAXTEXTO];
             strcpy(nombreImaSec,nombreIma);
             strcat(nombreImaSec,"_Sec.jpg");
@@ -134,7 +134,7 @@ int main(int argc, char *argv[]){
             strcpy(ArchivoNombreSec,nombreIma);
             strcat(ArchivoNombreSec,"_Histo_Sec.csv");
             GuardarCSV(histoImaO,nuevoHisto,ArchivoNombreSec);
-            printf("El archivo se ha creado correctamente.");
+            printf("El archivo .csv con la informacion de los Histogramas se ha creado correctamente.\n");
 
 
             /* PARTE PARALELA */
@@ -145,7 +145,7 @@ int main(int argc, char *argv[]){
             //Carga de imagen ocupada de secuencial
             printf("La imagen %s se ha cargado correctamente.\n", nombreImaExtend);
             printf("Datos de la imagen:\n");
-            printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",ancho,alto,nCanales,resolucion);
+            printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d Pixeles\n",ancho,alto,nCanales,resolucion);
 
             //Variables compartidas -> Fuera del pragma
             int histoImaOPara[L];
@@ -211,7 +211,7 @@ int main(int argc, char *argv[]){
             timeEndPara = omp_get_wtime()-timeStartPara;
 
             //Guardar imagen generada.
-            printf("Guardando imagen Paralelo...\n");
+            printf("Guardando nueva imagen - Paralelo...\n");
             char nombreImaPara[MAXTEXTO];
             strcpy(nombreImaPara,nombreIma);
             strcat(nombreImaPara,"_Para.jpg");
@@ -238,7 +238,7 @@ int main(int argc, char *argv[]){
             GuardarCSV(histoImaOPara,nuevoHistoPara,ArchivoNombrePara);
 
             timeEndArchivo = omp_get_wtime()-timeStartArchivo;
-            printf("El archivo se ha creado correctamente.\n");
+            printf("El archivo .csv con la informacion de los Histogramas se ha creado correctamente.\n");
 
             //Calculo de métricas
             Metricas(timeEndSec,timeEndPara,numProces);

@@ -69,6 +69,7 @@ void ImprimirMatriz(int *histoEc){
 
 void Metricas(double timeEndSec,double timeEndPara,int numProces){
     printf("\n=== Metricas ===");
+    printf("\n  *Numero de procesadores: %d\n",numProces);
     printf("\n  *Tiempos: \n     Secuencial: %f \n     Paralelo: %f",timeEndSec, timeEndPara);
     printf("\n  *SpeedUp: %f",timeEndSec/timeEndPara);
     printf("\n  *Eficiencia: %f",(timeEndSec/timeEndPara)/numProces);
