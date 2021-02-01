@@ -25,7 +25,6 @@ int main(int argc, char *argv[]){
       switch (opcion)
       {
         case 1: ;
-            /* PARTE SECUENCIAL */
             //Obtener ruta de la imagen
             char nombreIma[MAXTEXTO],nombreImaExtend[MAXTEXTO];
             char rutaImagen[MAXTEXTO] = "../ImagenesTest/";
@@ -38,7 +37,6 @@ int main(int argc, char *argv[]){
                 return 0;
             }
 
-            printf("\n=== Version Secuencial ===\n");
             //Carga de la imagen con la libreria stb
             int ancho, alto, nCanales, resolucion;
             double timeStartCarga,timeEndCarga;
@@ -49,21 +47,25 @@ int main(int argc, char *argv[]){
 
             if(imaOriginal == NULL){
                 printf("La imagen %s no pudo ser cargada.\n",nombreImaExtend);
-                return 0;
+                break;
             }
             else{
-                printf("La imagen %s se ha cargado correctamente.\n", nombreImaExtend);
-                printf("Datos de la imagen:\n");
-                resolucion = ancho*alto;
-                printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d Pixeles\n",ancho,alto,nCanales,resolucion);
-            }
-
-            if(nCanales == 3){
+                if(nCanales == 3){
                 unsigned char *imaTemp = malloc(resolucion);
                 for(int i=0; i<resolucion; i++)
                     imaTemp[i] = imaOriginal[i*nCanales];
                 imaOriginal = imaTemp;
+                }
             }
+
+            printf("La imagen %s se ha cargado correctamente.\n", nombreImaExtend);
+            printf("Datos de la imagen:\n");
+            resolucion = ancho*alto;
+            printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d Pixeles\n",ancho,alto,nCanales,resolucion);
+
+
+            /* PARTE SECUENCIAL */
+            printf("\n=== Version Secuencial ===\n");
 
             //Histograma generado de manera Secuencial.
             double timeStartSec,timeEndSec;
@@ -71,22 +73,23 @@ int main(int argc, char *argv[]){
             timeStartSec = omp_get_wtime();
 
             int histoImaO[L];
-            histo_secuencial(histoImaO,imaOriginal,resolucion);
+            int nuevoHisto[L];
 
-            //Verificación de pixeles
-            //printf("\nHistograma de la Imagen Original:\n");
-            //printf("\nContador: %d\n",VerificarPixeles(histoImaO));
+            //Inicialización del los histogramas de la imagen original y de la imagen que se generará
+            for(int i=0; i<L; i++){
+                histoImaO[i] = 0;
+                nuevoHisto[i] = 0;
+            }
+
+            //Cálculo del histograma de la imagen original.
+            for(int i = 0; i < resolucion; i++)
+                histoImaO[imaOriginal[i]]++;
 
             //Generacion el cdf (Cumulative Distributive Function)
             int cdf[L];
-            DistriAcumulada_secuencial(histoImaO,cdf);
-
-            //Comprobación
-            //printf("\nCDF:\n");
-            //ImprimirMatriz(cdf);
+            int cdf_min = DistriAcumulada(histoImaO,cdf);
 
             //Busqueda del valor minimo
-            int cdf_min = Minimo_secuencial(cdf);
             printf("\nValor minimo del cdf: %d\n",cdf_min);
 
             //Generacion  del histograma ecualizado.
@@ -98,25 +101,15 @@ int main(int argc, char *argv[]){
                 histoEc[i] = round(hv);
             }
 
-            //Comprobación
-            //printf("\nHISTOGRAMA ECUALIZADO:\n");
-            //ImprimirMatriz(histoEc);
-
             //Generacion del arreglo de Pixeles para la nueva imagen.
             unsigned char *imaEc = malloc(resolucion * sizeof(unsigned char));
 
             for(int i=0; i<resolucion; i++){
                 imaEc[i] = histoEc[imaOriginal[i]];
+                nuevoHisto[imaEc[i]]++;
             }
 
-            int nuevoHisto[L];
-            histo_secuencial(nuevoHisto,imaEc,resolucion);
-
             timeEndSec = omp_get_wtime()-timeStartSec;
-
-            //Verificar pixeles nuevo Histograma
-            //printf("\n\nHistograma de la nueva imagen:\n");
-            //printf("\nContador: %d\n",VerificarPixeles(nuevoHisto));
 
             //Guardar imagen generada.
             printf("Guardando nueva imagen - Secuencial...\n");
@@ -142,15 +135,10 @@ int main(int argc, char *argv[]){
             //Se ocupa la ruta y nombre de secuencial :D
             printf("\n\n=== Version Paralelo ===\n");
 
-            //Carga de imagen ocupada de secuencial
-            printf("La imagen %s se ha cargado correctamente.\n", nombreImaExtend);
-            printf("Datos de la imagen:\n");
-            printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d Pixeles\n",ancho,alto,nCanales,resolucion);
-
             //Variables compartidas -> Fuera del pragma
             int histoImaOPara[L];
             int cdfPara[L];
-            int cdfPara_min = 1000000;
+            int cdfPara_min = 100000;
             int histoEcPara[L];
             int nuevoHistoPara[L];
 
@@ -181,14 +169,10 @@ int main(int argc, char *argv[]){
 
                 //Cumulative Distributive Function y CDF min
                 #pragma omp single
-                    cdfPara[0] = histoImaOPara[0];
-                    for(int i=1; i<L; i++){
-                        cdfPara[i] = histoImaOPara[i]+cdfPara[i-1];
-                        if((cdfPara[i] < cdfPara_min)&&(cdfPara[i] != 0))
-                            cdfPara_min = cdfPara[i];
-                    }
-                    double denominador = resolucion-cdfPara_min;
+                    cdfPara_min = DistriAcumulada(histoImaOPara,cdfPara);
                     printf("\nValor minimo del cdf: %d\n",cdfPara_min); //Comprobación
+
+                    double denominador = resolucion-cdfPara_min;
 
                 //Formula de ecualización
                 #pragma omp for
@@ -272,17 +256,19 @@ int main(int argc, char *argv[]){
                 printf("La imagen %s se ha cargado correctamente.\n", nombreImaColorExtend);
                 printf("Datos de la imagen:\n");
                 resolution = width*height;
-                printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d MegaPixeles\n",width,height,channels,resolution/1000000);
+                printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d Pixeles\n",width,height,channels,resolution);
             }
 
             //Unicamente trabaja con imagenes a color de 3 canales.
             if(channels != 3){
                 printf("Lo sentimos, necesitamos una imagen de 3 canales para trabajar. :c");
-                return 0;
+                break;
             }
 
             //Reserva de memoria para la nueva imagen.
             unsigned char *newImage = malloc(resolution);
+
+            double timeStartImaColor = omp_get_wtime();
 
             //Valor de cada pixel en escala de grises.
             for(int i=0; i<resolution; i++){
@@ -290,17 +276,21 @@ int main(int argc, char *argv[]){
                 unsigned char green = image[i * channels+1];
                 unsigned char blue = image[i * channels+2];
 
-                newImage[i] = (unsigned char)(0.3 * (float)red + 0.59 * (float)green + 0.11 * (float)blue);
+                newImage[i] = (unsigned char)(0.299 * (float)red + 0.587 * (float)green + 0.114 * (float)blue);
             }
 
+            double timeEndImaColor = omp_get_wtime()-timeStartImaColor;
+
             //Guardar imagen generada.
-            printf("Guardando imagen...\n");
+            printf("\nGuardando imagen...\n");
             char nombreImaGris[MAXTEXTO];
             strcpy(nombreImaGris,nombreImaColor);
             strcat(nombreImaGris,"_Gris.jpg");
 
             stbi_write_jpg(nombreImaGris, width, height, 1, newImage, 100);
-            printf("\nImagen guardada correctamente.\n");
+            printf("Imagen guardada correctamente.\n");
+
+            printf("\n\tTiempo de ejecucion: %f segundos.",timeEndImaColor);
 
             //Liberar Memoria de la imagen.
             stbi_image_free(newImage);

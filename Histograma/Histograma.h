@@ -6,12 +6,7 @@
 //Lectura de datos desde el teclado.
 int manejoCadenas(char *nombreIma, char *nombreImaExtend, char *rutaImagen);
 
-//Prototipos Secuencial
-void histo_secuencial(int *histo, unsigned char *IMAGEN, int resolucion);
-void DistriAcumulada_secuencial(int* histoImaO,int *cdf);
-int Minimo_secuencial(int* cdf);
-
-//Prototipos Paralelo
+int DistriAcumulada(int* histoImaO,int *cdf);
 
 //Prototipos Comprobación
 int VerificarPixeles(int *histoIma);

@@ -20,33 +20,13 @@ int manejoCadenas(char *nombreIma, char *nombreImaExtend, char *rutaImagen){
     return 1;
 }
 
-//Métodos Secuenciales
-void histo_secuencial(int *histo, unsigned char *IMAGEN, int resolucion){
-    //Inicializar con 0
-    for(int i = 0; i < L; i++)
-        histo[i] = 0;
-
-    //Calculo del histograma
-    for(int i = 0; i < resolucion; i++)
-        histo[IMAGEN[i]]++;
-}
-
-void DistriAcumulada_secuencial(int* histoImaO,int *cdf){
+int DistriAcumulada(int* histoImaO,int *cdf){
+    int cdf_min = 10000000;
     cdf[0] = histoImaO[0];
 
-    for(int i=1; i<L; i++)
+    for(int i=1; i<L; i++){
         cdf[i] = histoImaO[i]+cdf[i-1];
-
-}
-
-int Minimo_secuencial(int* cdf){
-    int cdf_min = 1000000;
-
-    //Valor minimo en cdf diferente de 0.
-    for(int i=L-1; i>=0; i--){
-        if(cdf[i] == 0)
-            break;
-        if(cdf[i] < cdf_min)
+        if((cdf[i] < cdf_min)&&(cdf[i] != 0))
             cdf_min = cdf[i];
     }
     return cdf_min;
