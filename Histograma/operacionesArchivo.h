@@ -1,9 +1,8 @@
 #ifndef OPERACIONESARCHIVO_H_INCLUDED
 #define OPERACIONESARCHIVO_H_INCLUDED
 
-//#define MAXTEXTO 50
 
-int EstadoArchivo(char *archivoNombre);
+int VerificarRuta(char *nombreIma, char *nombreImaExtend, char *rutaImagen);
 void GuardarCSV(int *histoImaO, int *nuevoHisto,char *archivoNombre);
 
 

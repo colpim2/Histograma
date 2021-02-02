@@ -1,25 +1,20 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
 #include "operacionesArchivo.h"
 
 #define L 256
-//#define MAXTEXTO 500
+#define MAXTEXTO 500
 
-int EstadoArchivo(char *archivoNombre){
-FILE *Archivo;
-    if( (Archivo = fopen(archivoNombre,"r")) == NULL)
-	{
-        printf("No existe el archivo %s\n",archivoNombre);
-        system("pause");
-        return 0;
-    }
-    else{
-        printf("DATOS GUARDADOS...\n");
-        system("pause");
-        return 1;
-    }
+//Lectura del nombre del archivo
+int VerificarRuta(char *nombreIma, char *nombreImaExtend, char *rutaImagen){
+    strcpy(nombreImaExtend,nombreIma);
+    strcat(nombreImaExtend,".jpg");
+    strcat(rutaImagen,nombreImaExtend);
+
+    return access(rutaImagen,F_OK);
 }
 
 void GuardarCSV(int *histoImaO, int *nuevoHisto,char *archivoNombre){

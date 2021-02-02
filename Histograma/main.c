@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <unistd.h>
 #include <omp.h>
 
 #include "Histograma.h"
@@ -32,7 +31,7 @@ int main(int argc, char *argv[]){
             printf("=== Ecualizacion del Histograma ===\n");
             printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (sin la extensi%cn .jpg): ",162);
             scanf(" %[^\n]",&nombreIma);
-            if(manejoCadenas(nombreIma,nombreImaExtend,rutaImagen) == 0){
+            if(VerificarRuta(nombreIma,nombreImaExtend,rutaImagen) != 0){
                 printf("Lo sentimos, no existe la imagen %s :c",nombreImaExtend);
                 break;
             }
@@ -41,6 +40,7 @@ int main(int argc, char *argv[]){
             int ancho, alto, nCanales, resolucion;
             double timeStartCarga,timeEndCarga;
 
+            //Obtener el tiempo de carga
             timeStartCarga = omp_get_wtime();
             unsigned char *imaOriginal = stbi_load(rutaImagen, &ancho, &alto, &nCanales, 0);
             timeEndCarga = omp_get_wtime()-timeStartCarga;
@@ -83,19 +83,16 @@ int main(int argc, char *argv[]){
                 nuevoHisto[i] = 0;
             }
 
-            printf("Histograma inicializado\n");
-
             //Cálculo del histograma de la imagen original.
             for(int i=0; i<resolucion; i++)
                 histoImaO[imaOriginal[i]]++;
 
-            printf("Histograma calculado\n");
-
             //Generacion el cdf (Cumulative Distributive Function)
             int cdf[L];
-            int cdf_min = DistriAcumulada(histoImaO,cdf);
+            DistriAcumulada(histoImaO,cdf);
 
             //Busqueda del valor minimo
+            int cdf_min = Minimo(cdf);
             printf("\nValor minimo del cdf: %d\n",cdf_min);
 
             //Generacion  del histograma ecualizado.
@@ -118,10 +115,11 @@ int main(int argc, char *argv[]){
             timeEndSec = omp_get_wtime()-timeStartSec;
 
             //Guardar imagen generada.
-            printf("Guardando nueva imagen - Secuencial...\n");
             char nombreImaSec[MAXTEXTO];
             strcpy(nombreImaSec,nombreIma);
             strcat(nombreImaSec,"_Sec.jpg");
+
+            printf("Guardando nueva imagen - Secuencial...\n");
             stbi_write_jpg(nombreImaSec, ancho, alto, 1, imaEc, 100);
             printf("\nImagen guardada correctamente.\n");
 
@@ -132,27 +130,25 @@ int main(int argc, char *argv[]){
             char ArchivoNombreSec[MAXTEXTO];
             strcpy(ArchivoNombreSec,nombreIma);
             strcat(ArchivoNombreSec,"_Histo_Sec.csv");
+
             GuardarCSV(histoImaO,nuevoHisto,ArchivoNombreSec);
             printf("El archivo .csv con la informacion de los Histogramas se ha creado correctamente.\n");
 
 
             /* PARTE PARALELA */
 
-            //Se ocupa la ruta y nombre de secuencial :D
+            //Se ocupa la ruta y nombre de secuencial
             printf("\n\n=== Version Paralelo ===\n");
 
-            //Variables compartidas -> Fuera del pragma
-            int histoImaOPara[L];
-            int cdfPara[L];
+            //Variables compartidas
+            int histoImaOPara[L],cdfPara[L],histoEcPara[L],nuevoHistoPara[L];
             int cdfPara_min = 100000;
-            int histoEcPara[L];
-            int nuevoHistoPara[L];
 
             //Imagen Ecualizada
             unsigned char *imaEcPara = malloc(resolucion * sizeof(unsigned char));
 
             //Obtener numero de procesadores
-            int numProces = omp_get_num_threads();
+            int numProces = omp_get_num_procs();
 
             double timeStartPara,timeEndPara;
             timeStartPara = omp_get_wtime();
@@ -168,22 +164,29 @@ int main(int argc, char *argv[]){
 
                 #pragma omp barrier
 
-                //Obtener histograma usando descomposición de dominio/num. de procesadores
+                //Obtener histograma usando descomposición de dominio
                 #pragma omp for reduction(+ : histoImaOPara)
                     for(int i=0; i<resolucion; i++)
                         histoImaOPara[imaOriginal[i]]++;
 
                 //Cumulative Distributive Function y CDF min
                 #pragma omp single
-                    cdfPara_min = DistriAcumulada(histoImaOPara,cdfPara);
+                {
+                    cdfPara[0] = histoImaOPara[0];
+                    for(int i=1; i<L; i++)
+                    {
+                        cdfPara[i] = histoImaOPara[i]+cdfPara[i-1];
+                        if((cdfPara[i] < cdfPara_min)&&(cdfPara[i] != 0))
+                            cdfPara_min = cdfPara[i];
+                    }
                     printf("\nValor minimo del cdf: %d\n",cdfPara_min); //Comprobación
-
-                    double denominador = resolucion-cdfPara_min;
+                 }
 
                 //Formula de ecualización
                 #pragma omp for
                     for(int i=0; i<L; i++){
                         double numerador = cdfPara[i]-cdfPara_min;
+                        double denominador = resolucion-cdfPara_min;
                         int hv = numerador / denominador * (L-2) + 1;
                         histoEcPara[i] = round(hv);
                     }
@@ -201,11 +204,13 @@ int main(int argc, char *argv[]){
             timeEndPara = omp_get_wtime()-timeStartPara;
 
             //Guardar imagen generada.
-            printf("Guardando nueva imagen - Paralelo...\n");
             char nombreImaPara[MAXTEXTO];
             strcpy(nombreImaPara,nombreIma);
             strcat(nombreImaPara,"_Para.jpg");
 
+            printf("Guardando nueva imagen - Paralelo...\n");
+
+            //Obtener tiempo de generación
             double timeStartGenerada,timeEndGenerada;
             timeStartGenerada = omp_get_wtime();
 
@@ -222,6 +227,7 @@ int main(int argc, char *argv[]){
             strcpy(ArchivoNombrePara,nombreIma);
             strcat(ArchivoNombrePara,"_Histo_Para.csv");
 
+            //Obtener tiempo de archivo
             double timeStartArchivo,timeEndArchivo;
             timeStartArchivo = omp_get_wtime();
 
@@ -244,7 +250,7 @@ int main(int argc, char *argv[]){
             printf("=== Imagen Color a Gris ===\n");
             printf("Ingrese el nombre de la imagen jpg con la que se desea trabajar (sin la extensi%cn .jpg): ",162);
             scanf(" %[^\n]",&nombreImaColor);
-            if(manejoCadenas(nombreImaColor,nombreImaColorExtend,rutaImagenColor)== 0){
+            if(VerificarRuta(nombreImaColor,nombreImaColorExtend,rutaImagenColor)!= 0){
                 printf("Lo sentimos, no existe la imagen %s :c",nombreImaExtend);
                 return 0;
             }
@@ -288,11 +294,11 @@ int main(int argc, char *argv[]){
             double timeEndImaColor = omp_get_wtime()-timeStartImaColor;
 
             //Guardar imagen generada.
-            printf("\nGuardando imagen...\n");
             char nombreImaGris[MAXTEXTO];
             strcpy(nombreImaGris,nombreImaColor);
             strcat(nombreImaGris,"_Gris.jpg");
 
+            printf("\nGuardando imagen...\n");
             stbi_write_jpg(nombreImaGris, width, height, 1, newImage, 100);
             printf("Imagen guardada correctamente.\n");
 
@@ -308,6 +314,3 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-/* NOTA
-    - Gráficas de histogramas [Original,Ecualizada]
-*/
