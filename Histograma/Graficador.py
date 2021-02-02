@@ -9,12 +9,12 @@ import os
 import matplotlib.pyplot as plt
 
 
-def GraficarTiempos(Pixel, Valor, NombreIma):
+def GraficarTiempos(Pixel, Valor, NombreIma, TipoHistograma):
     plt.bar(Pixel, Valor,
-            label=NombreIma ,color="b")
+            label=TipoHistograma ,color="b")
     plt.xlabel("Pixel")
     plt.ylabel("Valor del Pixel")
-    plt.title("Histograma")
+    plt.title("Histograma " + NombreIma)
     plt.legend()
     plt.show()
 
@@ -72,14 +72,14 @@ def Main():
 
     if (HistogramaParalelo != 0):
         """ Grafica de tiempos """
-        GraficarTiempos(ValorPixel, HistogramaOriginal,"ORIGINAL")
-        GraficarTiempos(ValorPixel, HistogramaSecuencial,"SECUENCIAL")
-        GraficarTiempos(ValorPixel, HistogramaParalelo,"PARALELO")
+        GraficarTiempos(ValorPixel, HistogramaOriginal, NombreIma,"ORIGINAL")
+        GraficarTiempos(ValorPixel, HistogramaSecuencial, NombreIma,"SECUENCIAL")
+        GraficarTiempos(ValorPixel, HistogramaParalelo, NombreIma,"PARALELO")
     else:
         if (HistogramaSecuencial!= 0):
             """ Grafica de tiempos """
-            GraficarTiempos(ValorPixel, HistogramaOriginal,"ORIGINAL")
-            GraficarTiempos(ValorPixel, HistogramaSecuencial,"SECUENCIAL")
+            GraficarTiempos(ValorPixel, HistogramaOriginal,NombreIma,"ORIGINAL")
+            GraficarTiempos(ValorPixel, HistogramaSecuencial,NombreIma,"SECUENCIAL")
     
 
 Main()
