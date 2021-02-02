@@ -34,7 +34,7 @@ int main(int argc, char *argv[]){
             scanf(" %[^\n]",&nombreIma);
             if(manejoCadenas(nombreIma,nombreImaExtend,rutaImagen) == 0){
                 printf("Lo sentimos, no existe la imagen %s :c",nombreImaExtend);
-                return 0;
+                break;
             }
 
             //Carga de la imagen con la libreria stb
@@ -49,18 +49,20 @@ int main(int argc, char *argv[]){
                 printf("La imagen %s no pudo ser cargada.\n",nombreImaExtend);
                 break;
             }
-            else{
-                if(nCanales == 3){
+
+            resolucion = ancho*alto;
+
+            //Arreglo que almacena la informacion de un solo canal.
+            if(nCanales == 3){
                 unsigned char *imaTemp = malloc(resolucion);
-                for(int i=0; i<resolucion; i++)
+                for(int i=0; i<resolucion; i++){
                     imaTemp[i] = imaOriginal[i*nCanales];
-                imaOriginal = imaTemp;
                 }
+                imaOriginal = imaTemp;
             }
 
             printf("La imagen %s se ha cargado correctamente.\n", nombreImaExtend);
             printf("Datos de la imagen:\n");
-            resolucion = ancho*alto;
             printf("Ancho: %d\nAlto: %d\nNumero de Canales: %d\nResolucion %d Pixeles\n",ancho,alto,nCanales,resolucion);
 
 
@@ -81,9 +83,13 @@ int main(int argc, char *argv[]){
                 nuevoHisto[i] = 0;
             }
 
+            printf("Histograma inicializado\n");
+
             //Cálculo del histograma de la imagen original.
-            for(int i = 0; i < resolucion; i++)
+            for(int i=0; i<resolucion; i++)
                 histoImaO[imaOriginal[i]]++;
+
+            printf("Histograma calculado\n");
 
             //Generacion el cdf (Cumulative Distributive Function)
             int cdf[L];
