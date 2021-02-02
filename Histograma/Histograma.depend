@@ -3,21 +3,21 @@
 	<stdio.h>
 	"menu.h"
 
-1583418234 c:\users\hp\desktop\proyecto eda ii\histograma\histograma\menu.h
+1612292086 c:\users\hp\desktop\proyecto eda ii\histograma\histograma\menu.h
 
-1611964599 source:c:\users\hp\desktop\proyecto eda ii\histograma\histograma\operacionesarchivo.c
+1612292086 source:c:\users\hp\desktop\proyecto eda ii\histograma\histograma\operacionesarchivo.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
+	<unistd.h>
 	"operacionesArchivo.h"
 
-1611950805 c:\users\hp\desktop\proyecto eda ii\histograma\histograma\operacionesarchivo.h
+1612292086 c:\users\hp\desktop\proyecto eda ii\histograma\histograma\operacionesarchivo.h
 
-1612232904 source:c:\users\hp\desktop\proyecto eda ii\histograma\histograma\main.c
+1612292086 source:c:\users\hp\desktop\proyecto eda ii\histograma\histograma\main.c
 	<stdio.h>
 	<stdlib.h>
 	<math.h>
-	<unistd.h>
 	<omp.h>
 	"Histograma.h"
 	"operacionesArchivo.h"
@@ -25,7 +25,7 @@
 	"stb-master/stb_image.h"
 	"stb-master/stb_image_write.h"
 
-1612221419 c:\users\hp\desktop\proyecto eda ii\histograma\histograma\histograma.h
+1612292086 c:\users\hp\desktop\proyecto eda ii\histograma\histograma\histograma.h
 
 1611776490 c:\users\hp\desktop\proyecto eda ii\histograma\histograma\stb-master\stb_image.h
 	"stb_image.h"
@@ -53,12 +53,11 @@
 	<math.h>
 	<assert.h>
 
-1612221419 source:c:\users\hp\desktop\proyecto eda ii\histograma\histograma\histograma.c
+1612292086 source:c:\users\hp\desktop\proyecto eda ii\histograma\histograma\histograma.c
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	<omp.h>
-	<unistd.h>
 	<string.h>
 	"Histograma.h"
 
