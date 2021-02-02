@@ -9,11 +9,11 @@ import os
 import matplotlib.pyplot as plt
 
 
-def GraficarTiempos(Pixel, Valor, NombreIma, TipoHistograma):
-    plt.bar(Pixel, Valor,
+def GraficarTiempos(CantidadPixeles, Valores255, NombreIma, TipoHistograma):
+    plt.bar(CantidadPixeles, Valores255,
             label=TipoHistograma ,color="b")
-    plt.xlabel("Pixel")
-    plt.ylabel("Valor del Pixel")
+    plt.xlabel("0 - 255")
+    plt.ylabel("Cantidad de pixeles")
     plt.title("Histograma " + NombreIma)
     plt.legend()
     plt.show()
@@ -65,21 +65,23 @@ def Main():
     
     """ Obtener informacion del archivo .cvs (secuencial) """
     HistogramaSecuencial, HistogramaOriginal, ValorPixel = LeerCVS(CSVSec)
+    if (HistogramaSecuencial!= 0):
+        """ Grafica de tiempos """
+        GraficarTiempos(ValorPixel, HistogramaOriginal,NombreIma,"ORIGINAL")
+        GraficarTiempos(ValorPixel, HistogramaSecuencial,NombreIma,"SECUENCIAL")
     
     
     """ Obtener informacion del archivo .cvs (paralelo) """
-    HistogramaParalelo, Basura, Basura = LeerCVS(CSVPara)
-
-    if (HistogramaParalelo != 0):
+    HistogramaParalelo, HistogramaOriginal, ValorPixel = LeerCVS(CSVPara)
+    if (HistogramaParalelo != 0) and (HistogramaSecuencial!= 0):
         """ Grafica de tiempos """
-        GraficarTiempos(ValorPixel, HistogramaOriginal, NombreIma,"ORIGINAL")
-        GraficarTiempos(ValorPixel, HistogramaSecuencial, NombreIma,"SECUENCIAL")
         GraficarTiempos(ValorPixel, HistogramaParalelo, NombreIma,"PARALELO")
     else:
-        if (HistogramaSecuencial!= 0):
+        if (HistogramaParalelo != 0):
             """ Grafica de tiempos """
             GraficarTiempos(ValorPixel, HistogramaOriginal,NombreIma,"ORIGINAL")
-            GraficarTiempos(ValorPixel, HistogramaSecuencial,NombreIma,"SECUENCIAL")
+            GraficarTiempos(ValorPixel, HistogramaParalelo, NombreIma,"PARALELO")
+            
     
 
 Main()
